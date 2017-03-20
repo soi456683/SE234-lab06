@@ -17,6 +17,7 @@ public class UserServiceImpl {
     }
 
     public User login(String username, String password){
+
         List<User> users = userDao.getUsers();
         return users.stream().filter(u -> (u.getUsername().equals(username) && u.getPassword().equals(password)))
                 .findFirst().orElse(null);
@@ -27,8 +28,11 @@ public class UserServiceImpl {
     }
 
     public List<User> getPubAllowanceUser(LocalDate date){
+
         List<User> users = userDao.getUsers();
 
         return users.stream().filter(u-> isAbleToGoToPub(u,date)).collect(Collectors.toList());
     }
+
+
 }
