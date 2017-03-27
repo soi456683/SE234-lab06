@@ -3,8 +3,8 @@ package camt.se234.unittest.dao;
 import camt.se234.unittest.entity.User;
 import camt.se234.unittest.service.UserServiceImpl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -20,13 +20,24 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class UserDaoImplTest {
     @Test
     public void testGetUsers(){
-        UserDaoImpl userDao = new UserDaoImpl();
-        assertThat(userDao.getUsers(),
+        UserDao userDao = mock(UserDao.class);
+        when(userDao.getUsers())
+                .thenReturn(Arrays.asList(
+                        new User("Prayuth","1234","Tu",
+                                LocalDate.of(1979,2,14),"08612345678"),
+                        new User("Tucky","5675","Tuckung",
+                                LocalDate.of(1999,8,30),"08687654321")
+                ));
+        UserServiceImpl userService = new UserServiceImpl();
+        userService.setUserDao(userDao);
+        /*assertThat(userDao.getUsers(),
                 hasItems(new User("Prayuth","1234","Tu",
                                 LocalDate.of(1979,2,14),"08612345678"),
                         new User("Tucky","5675","Tuckung",
@@ -138,7 +149,7 @@ public class UserDaoImplTest {
                         new User("Thapanis","5415","GOAT",
                                 LocalDate.of(2017,5,10),"09187654321")
 
-                ));
+                ));*/
     }
 
     @Test
@@ -152,18 +163,13 @@ public class UserDaoImplTest {
         User user = new User("Prayuth","1234","Tu", LocalDate.of(1979,2,14),"08612345678");
         assertThat(userService.login("Prayuth","1234"),null);
     }
+    
     @Test
-
-    public void testisAbleToGoToPub(){
+    public void testisAbleToGoToPub(User inputUser,LocalDate date,boolean expected){
         UserServiceImpl userService = new UserServiceImpl();
         UserDaoImpl userDao = new UserDaoImpl();
         userService.setUserDao(userDao);
-//        assertThat(userService.isAbleToGoToPub(userService.login("Prayuth","1234"), LocalDate.of(2017,3,20)), is(true));
-//
-//        assertThat(userService.isAbleToGoToPub(userService.login("Honey","aabbcc"), LocalDate.of(2017,3,20)), is(false));
-//        assertThat(userService.isAbleToGoToPub(userService.login("None","none"), LocalDate.of(2017,3,20)), is(false));
-        //Add more test class for update method
-        assertThat(userService.isAbleToGoToPub(userService.login("None","none"), LocalDate.of(2018,2,2)), is(false));
+        assertThat(userService.isAbleToGoToPub(inputUser,date),is(expected));
 
 
     }
@@ -171,19 +177,41 @@ public class UserDaoImplTest {
     public void testgetPubAllowanceUser(){
         List<User> list = new ArrayList<>();
         UserServiceImpl userService = new UserServiceImpl();
-        UserDaoImpl userDao = new UserDaoImpl();
-        userService.setUserDao(userDao);
-//        assertThat(userService.isAbleToGoToPub(userService.login("Prayuth","1234"), LocalDate.of(2017,3,20)), is(true));
-//
-//        assertThat(userService.isAbleToGoToPub(userService.login("Honey","aabbcc"), LocalDate.of(2017,3,20)), is(false));
-//        assertThat(userService.isAbleToGoToPub(userService.login("None","none"), LocalDate.of(2017,3,20)), is(false));
-        //Add more test class
+        UserDao userDao = mock(UserDao.class);
+        userService.setUserDao((UserDao) userDao);
         assertThat(userService.getPubAllowanceUser(LocalDate.of(2017,3,20)), is(list));
 //2.2 naja
-
-
-
     }
+
+    @Test
+    public void testLogin(){
+        UserDao userDao = mock(UserDao.class);
+        when(userDao.getUsers())
+                .thenReturn(Arrays.asList(
+                        new User("Prayuth","1234","Tu",
+                                LocalDate.of(1979,2,14),"08612345678"),
+                        new User("Tucky","5675","Tuckung",
+                                LocalDate.of(1999,8,30),"08687654321")
+                ));
+        UserServiceImpl userService = new UserServiceImpl();
+        userService.setUserDao(userDao);
+    }
+    @Test
+    public void testFindById(){
+        UserDao userDao = mock(UserDao.class);
+        when(userDao.findById(1))
+                .thenReturn( new User("Prayuth","1234","Tu",
+                        LocalDate.of(1979,2,14),"08612345678"));
+        when(userDao.findById(10))
+            .thenReturn( new User("Tucky","5675","Tuckung",
+                         LocalDate.of(1999,8,30),"08687654321"));
+        when(userDao.findById(org.mockito.Matchers.any()))
+                .thenReturn( new User("","","",
+                        null,""));
+    }
+
+
+
 
 
 
