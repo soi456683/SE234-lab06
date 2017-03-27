@@ -1,10 +1,8 @@
 package camt.se234.unittest.entity;
 
 import lombok.Builder;
-import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Builder
 public class User {
@@ -48,7 +46,9 @@ public class User {
         if (name != null ? !name.equals(user.name) : user.name != null) return false;
         if (getDateOfBirth() != null ? !getDateOfBirth().equals(user.getDateOfBirth()) : user.getDateOfBirth() != null)
             return false;
-        return telephoneNo != null ? telephoneNo.equals(user.telephoneNo) : user.telephoneNo == null;
+        if (telephoneNo != null ? !telephoneNo.equals(user.telephoneNo) : user.telephoneNo != null) return false;
+
+        return true;
     }
 
     @Override
@@ -59,6 +59,9 @@ public class User {
         result = 31 * result + (getDateOfBirth() != null ? getDateOfBirth().hashCode() : 0);
         result = 31 * result + (telephoneNo != null ? telephoneNo.hashCode() : 0);
         return result;
+    }
 
+    public String getName() {
+        return name;
     }
 }
